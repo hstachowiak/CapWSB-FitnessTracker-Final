@@ -3,146 +3,121 @@ package com.capgemini.wsb.fitnesstracker.loader;
 import com.capgemini.wsb.fitnesstracker.training.api.Training;
 import com.capgemini.wsb.fitnesstracker.training.internal.ActivityType;
 import com.capgemini.wsb.fitnesstracker.user.api.User;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
+import com.capgemini.wsb.fitnesstracker.user.internal.UserRepository;
+import com.capgemini.wsb.fitnesstracker.training.internal.TrainingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.annotation.PostConstruct;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.time.LocalDate.now;
 import static java.util.Objects.isNull;
 
-/**
- * Sample init data loader. If the application is run with `loadInitialData` profile, then on application startup it will fill the database with dummy data,
- * for the manual testing purposes. Loader is triggered by {@link ContextRefreshedEvent } event
- */
 @Component
-@Profile("loadInitialData")
-@Slf4j
-@ToString
-class InitialDataLoader {
+public class InitialDataLoader {
 
     @Autowired
-    private JpaRepository<User, Long> userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    private JpaRepository<Training, Long> trainingRepository;
+    private TrainingRepository trainingRepository;
 
-    @EventListener
-    @Transactional
-    @SuppressWarnings({"squid:S1854", "squid:S1481", "squid:S1192", "unused"})
-    public void loadInitialData(ContextRefreshedEvent event) {
+    @PostConstruct
+    private void initDatabase() {
         verifyDependenciesAutowired();
-
-        log.info("Loading initial data to the database");
-
-        List<User> sampleUserList = generateSampleUsers();
-        List<Training> sampleTrainingList = generateTrainingData(sampleUserList);
-
-
-        log.info("Finished loading initial data");
+        List<User> users = createUsers();
+        createTrainings(users);
     }
 
-    private User generateUser(String name, String lastName, int age) {
-        User user = new User(name,
-                             lastName,
-                             now().minusYears(age),
-                             "%s.%s@domain.com".formatted(name, lastName));
-        return userRepository.save(user);
-    }
-
-    private List<User> generateSampleUsers() {
+    private List<User> createUsers() {
         List<User> users = new ArrayList<>();
 
-        users.add(generateUser("Emma", "Johnson", 28));
-        users.add(generateUser("Ethan", "Taylor", 51));
-        users.add(generateUser("Olivia", "Davis", 76));
-        users.add(generateUser("Daniel", "Thomas", 34));
-        users.add(generateUser("Sophia", "Baker", 49));
-        users.add(generateUser("Liam", "Jones", 23));
-        users.add(generateUser("Ava", "Williams", 21));
-        users.add(generateUser("Noah", "Miller", 39));
-        users.add(generateUser("Grace", "Anderson", 33));
-        users.add(generateUser("Oliver", "Swift", 29));
+        // Dodaj przykładowych użytkowników
+        users.add(new User("User1", "LastName1", LocalDate.of(1990, 1, 1), "user1@example.com"));
+        users.add(new User("User2", "LastName2", LocalDate.of(1991, 2, 2), "user2@example.com"));
+        users.add(new User("User3", "LastName3", LocalDate.of(1992, 3, 3), "user3@example.com"));
+        users.add(new User("User4", "LastName4", LocalDate.of(1993, 4, 4), "user4@example.com"));
+        users.add(new User("User5", "LastName5", LocalDate.of(1994, 5, 5), "user5@example.com"));
+        users.add(new User("User6", "LastName6", LocalDate.of(1995, 6, 6), "user6@example.com"));
+        users.add(new User("User7", "LastName7", LocalDate.of(1996, 7, 7), "user7@example.com"));
+        users.add(new User("User8", "LastName8", LocalDate.of(1997, 8, 8), "user8@example.com"));
+        users.add(new User("User9", "LastName9", LocalDate.of(1998, 9, 9), "user9@example.com"));
+        users.add(new User("User10", "LastName10", LocalDate.of(1999, 10, 10), "user10@example.com"));
+
+        users.forEach(user -> userRepository.save(user));
 
         return users;
     }
 
-    private List<Training> generateTrainingData(List<User> users) {
+    private List<Training> createTrainings(List<User> users) {
         List<Training> trainingData = new ArrayList<>();
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-            Training training1 = new Training(users.get(0),
-                                              sdf.parse("2024-01-19 08:00:00"),
-                                              sdf.parse("2024-01-19 09:30:00"),
-                                              ActivityType.RUNNING,
-                                              10.5,
-                                              8.2);
-            Training training2 = new Training(users.get(1),
-                                              sdf.parse("2024-01-18 15:30:00"),
-                                              sdf.parse("2024-01-18 17:00:00"),
-                                              ActivityType.CYCLING,
-                                              25.0,
-                                              18.5);
-            Training training3 = new Training(users.get(2),
-                                              sdf.parse("2024-01-17 07:45:00"),
-                                              sdf.parse("2024-01-17 09:00:00"),
-                                              ActivityType.WALKING,
-                                              5.2,
-                                              5.8);
-            Training training4 = new Training(users.get(3),
-                                              sdf.parse("2024-01-16 18:00:00"),
-                                              sdf.parse("2024-01-16 19:30:00"),
-                                              ActivityType.RUNNING,
-                                              12.3,
-                                              9.0);
-            Training training5 = new Training(users.get(4),
-                                              sdf.parse("2024-01-15 12:30:00"),
-                                              sdf.parse("2024-01-15 13:45:00"),
-                                              ActivityType.CYCLING,
-                                              18.7,
-                                              15.3);
-            Training training6 = new Training(users.get(5),
-                                              sdf.parse("2024-01-14 09:00:00"),
-                                              sdf.parse("2024-01-14 10:15:00"),
-                                              ActivityType.WALKING,
-                                              3.5,
-                                              4.0);
-            Training training7 = new Training(users.get(6),
-                                              sdf.parse("2024-01-13 16:45:00"),
-                                              sdf.parse("2024-01-13 18:30:00"),
-                                              ActivityType.RUNNING,
-                                              15.0,
-                                              10.8);
-            Training training8 = new Training(users.get(7),
-                                              sdf.parse("2024-01-12 11:30:00"),
-                                              sdf.parse("2024-01-12 12:45:00"),
-                                              ActivityType.CYCLING,
-                                              22.5,
-                                              17.2);
-            Training training9 = new Training(users.get(8),
-                                              sdf.parse("2024-01-11 07:15:00"),
-                                              sdf.parse("2024-01-11 08:30:00"),
-                                              ActivityType.WALKING,
-                                              4.2,
-                                              4.5);
-            Training training10 = new Training(users.get(9),
-                                               sdf.parse("2024-01-10 14:00:00"),
-                                               sdf.parse("2024-01-10 15:15:00"),
-                                               ActivityType.RUNNING,
-                                               11.8,
-                                               8.5);
+            Training training1 = new Training(ActivityType.RUNNING,
+                    sdf.parse("2024-01-10 12:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    sdf.parse("2024-01-10 13:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    10.5,
+                    10.5,
+                    users.get(0));
+            Training training2 = new Training(ActivityType.CYCLING,
+                    sdf.parse("2024-01-11 10:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    sdf.parse("2024-01-11 11:30:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    20.0,
+                    15.0,
+                    users.get(1));
+            Training training3 = new Training(ActivityType.WALKING,
+                    sdf.parse("2024-01-12 08:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    sdf.parse("2024-01-12 09:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    5.0,
+                    5.0,
+                    users.get(2));
+            Training training4 = new Training(ActivityType.SWIMMING,
+                    sdf.parse("2024-01-13 14:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    sdf.parse("2024-01-13 15:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    1.0,
+                    2.0,
+                    users.get(3));
+            Training training5 = new Training(ActivityType.TENNIS,
+                    sdf.parse("2024-01-14 17:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    sdf.parse("2024-01-14 18:30:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    0.0,
+                    0.0,
+                    users.get(4));
+            Training training6 = new Training(ActivityType.RUNNING,
+                    sdf.parse("2024-01-15 07:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    sdf.parse("2024-01-15 08:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    12.0,
+                    11.0,
+                    users.get(5));
+            Training training7 = new Training(ActivityType.CYCLING,
+                    sdf.parse("2024-01-09 09:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    sdf.parse("2024-01-09 10:45:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    25.5,
+                    18.0,
+                    users.get(6));
+            Training training8 = new Training(ActivityType.SWIMMING,
+                    sdf.parse("2024-01-08 15:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    sdf.parse("2024-01-08 16:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    1.5,
+                    3.0,
+                    users.get(7));
+            Training training9 = new Training(ActivityType.WALKING,
+                    sdf.parse("2024-01-11 07:15:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    sdf.parse("2024-01-11 08:30:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    4.2,
+                    4.5,
+                    users.get(8));
+            Training training10 = new Training(ActivityType.RUNNING,
+                    sdf.parse("2024-01-10 14:00:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    sdf.parse("2024-01-10 15:15:00").toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                    11.8,
+                    8.5,
+                    users.get(9));
 
             trainingData.add(training1);
             trainingData.add(training2);
@@ -162,10 +137,10 @@ class InitialDataLoader {
 
         return trainingData;
     }
+
     private void verifyDependenciesAutowired() {
-        if (isNull(userRepository)) {
+        if (isNull(userRepository) || isNull(trainingRepository)) {
             throw new IllegalStateException("Initial data loader was not autowired correctly " + this);
         }
     }
-
 }
