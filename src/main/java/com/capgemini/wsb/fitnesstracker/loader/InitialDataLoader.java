@@ -37,7 +37,6 @@ public class InitialDataLoader {
     private List<User> createUsers() {
         List<User> users = new ArrayList<>();
 
-        // Dodaj przykładowych użytkowników
         users.add(new User("User1", "LastName1", LocalDate.of(1990, 1, 1), "user1@example.com"));
         users.add(new User("User2", "LastName2", LocalDate.of(1991, 2, 2), "user2@example.com"));
         users.add(new User("User3", "LastName3", LocalDate.of(1992, 3, 3), "user3@example.com"));

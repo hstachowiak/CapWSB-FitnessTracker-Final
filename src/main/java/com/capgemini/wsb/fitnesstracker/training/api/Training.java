@@ -28,7 +28,6 @@ public class Training {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // Dodajemy brakujący konstruktor
     public Training(ActivityType activityType, LocalDateTime startTime, LocalDateTime endTime, double distance, double averageSpeed, User user) {
         this.activityType = activityType;
         this.startTime = startTime;
@@ -38,6 +37,5 @@ public class Training {
         this.user = user;
     }
 
-    // Domyślny konstruktor
     public Training() {}
 }

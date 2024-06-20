@@ -97,7 +97,7 @@ class UserApiIntegrationTest extends IntegrationTestBase {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(creationRequest))
                 .andDo(print())
-                .andExpect(status().isCreated()); // Zmiana statusu na isCreated
+                .andExpect(status().isCreated());
 
         List<User> allUsers = userRepository.findAll();
         User user = allUsers.get(0);

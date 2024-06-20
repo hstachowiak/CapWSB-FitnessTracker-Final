@@ -3,10 +3,10 @@ package com.capgemini.wsb.fitnesstracker.livecoding.ioc;
 public class IoC {
 
     public static void main(String[] args) {
-        // Instance created outside
+
         Bar bar = new Bar();
 
-        // Foo constructed with Bar (from outside)
+
         Foo foo = new Foo(bar);
         foo.useBar();
     }
@@ -20,7 +20,6 @@ public class IoC {
     static class Foo {
         private Bar bar;
 
-        // Dependency injected from Outside
         public Foo(Bar bar) {
             this.bar = bar;
         }

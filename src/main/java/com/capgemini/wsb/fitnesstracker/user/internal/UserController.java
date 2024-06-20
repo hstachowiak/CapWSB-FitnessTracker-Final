@@ -27,11 +27,11 @@ class UserController {
 
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody UserDto userDto) throws InterruptedException {
-        // Demonstracja how to use @RequestBody
+
         System.out.println("User with e-mail: " + userDto.email() + " passed to the request");
 
         User createdUser = userService.addUser(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser); // Zmiana statusu na 201
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @PutMapping("/{id}")
@@ -42,6 +42,6 @@ class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build(); // Zmiana statusu na 204
+        return ResponseEntity.noContent().build();
     }
 }

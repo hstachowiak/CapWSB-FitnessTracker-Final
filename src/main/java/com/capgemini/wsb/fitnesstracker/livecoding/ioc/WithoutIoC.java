@@ -16,7 +16,7 @@ public class WithoutIoC {
         private Bar bar;
 
         public Foo() {
-            this.bar = new Bar(); // Direct dependency!
+            this.bar = new Bar();
         }
 
         public void useBar() {
